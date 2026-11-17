@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: petcare-santa-rosa-pilot
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /api/public/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: pilot
+      - key: PETCARE_DB_URL
+        sync: false
+      - key: PETCARE_DB_USER
+        sync: false
+      - key: PETCARE_DB_PASSWORD
+        sync: false

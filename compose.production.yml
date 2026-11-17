@@ -1,0 +1,34 @@
+services:
+  database:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: petcare
+      MYSQL_USER: petcare
+      MYSQL_PASSWORD: ${PETCARE_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${PETCARE_DB_ROOT_PASSWORD}
+    volumes:
+      - petcare_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u petcare -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      PORT: 8081
+      PETCARE_DB_URL: jdbc:mysql://database:3306/petcare?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8
+      PETCARE_DB_USER: petcare
+      PETCARE_DB_PASSWORD: ${PETCARE_DB_PASSWORD}
+    ports:
+      - "${PETCARE_PUBLIC_PORT:-8081}:8081"
+
+volumes:
+  petcare_mysql:
