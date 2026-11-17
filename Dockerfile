@@ -1,9 +1,8 @@
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /workspace
 COPY pom.xml .
-RUN mvn -B -DskipTests dependency:go-offline
 COPY src ./src
-RUN mvn -B -DskipTests package
+RUN mvn -B -DskipTests --no-transfer-progress package
 
 FROM eclipse-temurin:25-jre
 WORKDIR /app

@@ -1,16 +1,15 @@
 services:
   database:
-    image: mysql:8.4
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: petcare
-      MYSQL_USER: petcare
-      MYSQL_PASSWORD: ${PETCARE_DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${PETCARE_DB_ROOT_PASSWORD}
+      POSTGRES_DB: petcare
+      POSTGRES_USER: petcare
+      POSTGRES_PASSWORD: ${PETCARE_DB_PASSWORD}
     volumes:
-      - petcare_mysql:/var/lib/mysql
+      - petcare_postgresql:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u petcare -p$$MYSQL_PASSWORD --silent"]
+      test: ["CMD-SHELL", "pg_isready -U petcare -d petcare"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -24,11 +23,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       PORT: 8081
-      PETCARE_DB_URL: jdbc:mysql://database:3306/petcare?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8
+      PETCARE_DB_URL: jdbc:postgresql://database:5432/petcare
       PETCARE_DB_USER: petcare
       PETCARE_DB_PASSWORD: ${PETCARE_DB_PASSWORD}
     ports:
       - "${PETCARE_PUBLIC_PORT:-8081}:8081"
 
 volumes:
-  petcare_mysql:
+  petcare_postgresql:
