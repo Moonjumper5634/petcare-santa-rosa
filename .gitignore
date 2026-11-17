@@ -9,3 +9,6 @@ application-local.properties
 .env.*
 !.env.production.example
 tools/node_modules/
+# Local research and seed-generation references are not needed by the hosted service.
+docs/
+tools/
